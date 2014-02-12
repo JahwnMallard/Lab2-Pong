@@ -65,11 +65,11 @@ begin
 	
 	else 
 	-- bottom third of the screen
-			if ( ( (row < 140) or (row > 280)) or  --top and bottom
-				 ( (column> 400 ) and (column > 420)) or	--middle section	
-				 ( (column>565 or column<226) or  --left and right
-				 ((column>260 and column<360) and ((row>240 and row<320) or (row>160 and row <216))) or -- A 
-				 ((column>460 and column<565) and ((row>240 and row<320 ) or (row>160 and row<216)))))  then
+			if ( ( (row <130) or (row > 315)) or  --top and bottom
+				 ( (column> 320 ) and (column < 345)) or	--middle section	
+				 ( (column>455 or column<180) or  --left and right
+				 ((column>210 and column<290) and ((row>240 and row<315) or (row>160 and row <210))) or -- A 
+				 ((column>375 and column<455) and ((row>240 and row<315 ) or (row>160 and row<210)))))  then
 				r <= ( others=>'0');
 				g <=(others => '0');
 				b <= (others => '0');	
