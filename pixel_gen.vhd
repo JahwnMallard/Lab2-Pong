@@ -65,18 +65,18 @@ begin
 	
 	else 
 	-- bottom third of the screen
-			if ( ( (row < "00010001100") or (row > "00101000000")) or  --top and bottom
-				 ( (column< "00011010101") or (column > "00110101010")) or	--middle section	
-				 ( (column>455 and column< 180) or  --left and right
+			if ( ( (row < 140) or (row > 280)) or  --top and bottom
+				 ( (column<213 ) or (column >426)) or	--middle section	
+				 ( (column>455 and column<180) or  --left and right
 				 ((column>209 and column<290) and ((row>240 and row<320) or (row>160 and row <216))) or -- A 
 				 ((column>370 and column<426) and ((row>240 and row<320 ) or (row>160 and row<216)))))  then
 				r <= ( others=>'0');
 				g <=(others => '0');
-				b <= (others => '1');	
+				b <= (others => '0');	
 			else 
 				r <= ( others=>'0');
 				g <= ( others=>'0');
-				b <= (others => '0');
+				b <= (others => '1');
 			end if;
 	end if;				
 	 			
