@@ -51,28 +51,9 @@ type ball_dy is
 signal count, count_next : unsigned (10 downto 0);
 signal ball_x_pos, ball_y_pos :  unsigned(10 downto 0);
 
-signal dx_reg, dx_next : ball_dx;
-signal dy_reg, dy_next : ball_dy;
-
+signal dx, dy : std_logic;
 begin
  --ball_X state register
-process(clk, reset)
-   begin
-      if (reset='1') then
-         dx_reg <= left;
-      elsif rising_edge(clk) then
-			dx_reg <= dx_next;
-      end if;
-end process;
-
-process(clk, reset)
-   begin
-      if (reset='1') then
-         dy_reg <= ball_up;
-      elsif rising_edge(clk) then
-			dy_reg <= dy_next;
-      end if;
-end process;
 
 
 --count register
@@ -90,56 +71,43 @@ count_next <= (others => '0') when (count = 999) else
 				  count when (v_completed = '0') else
 				  count + 1;
 
+
+
 process(count_next)
-	begin
-	
-	if(count_next = 0) then
-		case ball_x_pos is
-			when ("1001111111") => 
-			if(dx_reg = right) then
-				dx_next <= left;
-			else 
-				dx_next <=right;
-			end if;
-			
-			when (others=> '0') =>
-			if(dx_reg = left) then
-				dx_next <= right;
-			else 
-				dx_next <=left;
-			end if;
-			
-			when others =>
-				dx_next <= dx_reg;
-			end case;
-			
+ begin
+ if(count_next= 0) then
+	if(dx = '1') then
+		ball_x_pos<= ball_x_pos+1;
+	elsif (dx ='0') then
+		ball_x_pos <= ball_x_pos - 1;
 	end if;
-	
-end process;
+
+end if;
+end process;	
 
 
-process(dx_next, reset)
+process(count_next)
 begin
-	if (Reset= '1') then
-		ball_x_pos<= ("00110010010");
-	elsif (dx_next = left) then
-		ball_x_pos <= ball_x_pos-1;
-	else
-		ball_x_pos <= ball_x_pos+1;
-	end if;	
+if(count_next = 0) then
+	if( (ball_x_pos = 639) and (dx='1')) then
+		dx <= '0';
+	elsif ( (ball_x_pos = 0) and (dx='0')) then
+		dx <= '1';
+	else	
+		dx <= dx;
+	end if;
+end if;	
 end process;
 
 process(reset, count_next)
 	begin
-	   ball_x<= ("00110010010");
-	if (reset = '1') then
 		ball_x<= ("00110010010");
-		ball_x_pos<= ("00110010010");
-	elsif (count_next = 0) then
-		 ball_x <= ball_x_pos;
-	else
-		ball_x <= ball_x;
-	end if;
+	if(reset = '0') then
+		ball_x <= ball_x_pos;
+	end if;	
+	
+	ball_x<= ball_x_pos;
+	
 end process;	
 end Behavioral;
 
