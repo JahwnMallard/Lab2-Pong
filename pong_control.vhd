@@ -49,7 +49,7 @@ architecture Behavioral of pong_control is
 		btn_out : OUT std_logic
 		);
 	END COMPONENT;
-signal paddle_y_reg, paddle_y_next, count, count_next : unsigned(10 downto 0);
+signal paddle_y_reg, paddle_y_next, count, count_next: unsigned(10 downto 0);
 signal down_sig, up_sig : std_logic;
 
 begin
@@ -79,34 +79,38 @@ end process;
 
 
 --count logic
-count_next <= (others => '0') when (count = 9999) else
-				  count + 1 when v_completed = '1' else
-				  count;
+--count_next <= (others => '0') when (count = 999999) else
+	--			  count + 1 when v_completed = '1' else
+		--		  count;
 				  
+count_next <= count;				  
 process(clk, reset)
 begin
 		if (reset = '1') then
-			paddle_y_reg <= to_unsigned(45,11);
+			paddle_y_reg <= to_unsigned(200,11);
 		elsif rising_edge(clk) then
 			paddle_y_reg <= paddle_y_next;
 		end if;
 
 end process;
 
-process(up, down, paddle_y_reg, paddle_y_next)
+process(up_sig, down_sig, paddle_y_reg, paddle_y_next)
 begin 
 
 paddle_y_next <= paddle_y_reg;
 
-	if (up_sig = '1' and  down_sig = '0' and paddle_y_next > 44) then
-		paddle_y_next <= paddle_y_reg - 5;	
-	elsif (up_sig = '0' and down_sig = '1' and paddle_y_next <436 ) then
-		paddle_y_next <= paddle_y_reg + 5;
+	if (up_sig = '1' and  down_sig = '0' and paddle_y_next > 44 ) then
+		paddle_y_next <= paddle_y_reg - to_unsigned(5, 11);	
+	elsif (up_sig = '0' and down_sig = '1' and paddle_y_next <436) then
+		paddle_y_next <= paddle_y_reg + to_unsigned(5,11);
+
 	end if;
 
 end process;
 
-paddle_y <= paddle_y_reg;
+paddle_y <= paddle_y_reg;	
+
+
 
 end Behavioral;
 

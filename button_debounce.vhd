@@ -39,10 +39,10 @@ end button_debounce;
 architecture Behavioral of button_debounce is
 
 type button is
-(pressed, depressed, stall);
+(stall, pressed, depressed);
 
 signal button_reg, button_next : button;
-signal count_reg, count_next : unsigned ( 10 downto 0);
+signal count_reg, count_next : unsigned ( 19 downto 0);
 signal button_out_buff, button_next_buff : std_logic;
 
 
@@ -50,15 +50,15 @@ signal button_out_buff, button_next_buff : std_logic;
 begin
 
 
-count_next <= count_reg + 1 when button_reg = pressed else
-to_unsigned(0, 11);
+count_next <= count_reg + 1 when button_next = pressed else
+to_unsigned(0, 20);
 
 
 
 process(clk, reset)
 	begin
 			if (reset = '1') then
-				count_reg <= to_unsigned(0,11);
+				count_reg <= to_unsigned(0,20);
 			elsif rising_edge(clk) then
 				count_reg <= count_next;
 			end if;
@@ -84,15 +84,18 @@ process(clk, reset)
 	end process;
 	
 	
-	process(btn_in, count_reg)
+	process(btn_in, count_reg, button_reg)
 		begin
+		
+			button_next<=button_reg;
 			case button_reg is
 			 when stall =>
 				if(btn_in = '1') then
 					button_next <= pressed;
 				end if;
+				
 			when pressed =>
-				if(count_reg>10000 and btn_in = '0') then	
+				if(count_reg>50000 and btn_in = '0') then	
 					button_next <=depressed;
 				end if;
 			when depressed =>
