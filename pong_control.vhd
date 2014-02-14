@@ -99,10 +99,10 @@ begin
 
 paddle_y_next <= paddle_y_reg;
 
-	if (up_sig = '1' and  down_sig = '0' and paddle_y_next > 44 ) then
-		paddle_y_next <= paddle_y_reg - to_unsigned(5, 11);	
-	elsif (up_sig = '0' and down_sig = '1' and paddle_y_next <436) then
-		paddle_y_next <= paddle_y_reg + to_unsigned(5,11);
+	if (up_sig = '1' and  down_sig = '0' and paddle_y_reg > 80 ) then
+		paddle_y_next <= paddle_y_reg - to_unsigned(10, 11);	
+	elsif (up_sig = '0' and down_sig = '1' and paddle_y_reg <400) then
+		paddle_y_next <= paddle_y_reg + to_unsigned(10,11);
 
 	end if;
 
