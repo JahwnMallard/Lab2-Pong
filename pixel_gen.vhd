@@ -65,9 +65,9 @@ begin
 	
 	else 
 	-- bottom third of the screen
-			if ( ( (row <130) or (row > 315)) or  --top and bottom
-				 ( (column> 320 ) and (column < 345)) or	--middle section	
-				 ( (column>455 or column<180) or  --left and right
+			if ( ( (row <130) or (row >= 315)) or  --top and bottom
+				 ( (column> 320 ) and (column <= 345)) or	--middle section	
+				 ( (column>=455 or column<180) or  --left and right
 				 ((column>210 and column<290) and ((row>240 and row<315) or (row>160 and row <210))) or -- A 
 				 ((column>375 and column<455) and ((row>240 and row<315 ) or (row>160 and row<210)))))  then
 				r <= ( others=>'0');
