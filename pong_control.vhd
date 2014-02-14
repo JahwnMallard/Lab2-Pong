@@ -226,7 +226,7 @@ begin
 	x_next<= x_reg;
 	y_next <= y_reg;
 
- if(count_next = 0 and v_completed = '1') then
+ if(count_next = 0 and v_completed = '1' and stop_reg ='0') then
 		if(dx_reg = '1') then
 			x_next <= x_reg +1;
 		else 
