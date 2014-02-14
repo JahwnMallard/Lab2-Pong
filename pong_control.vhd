@@ -85,6 +85,7 @@ begin
 
 end process;
 
+velocity <= to_unsigned(500,11);
 --ball position register
 process(clk, reset)
 begin
@@ -187,15 +188,15 @@ begin
 		case ball_next is
 			when move =>
 				if(dx_reg = '1') then
-					x_next <= x_reg + 1;
+					x_next <= x_reg + to_unsigned(1,11);
 				elsif (dx_reg = '0') then
-					x_next <= x_reg -1;
+					x_next <= x_reg -to_unsigned(1,11);
 				end if;
 				
 				if (dy_reg = '1') then
-					y_next <= y_reg -1;
+					y_next <= y_reg -to_unsigned(1,11);
 				elsif (dy_reg = '0') then
-					y_next <= y_reg +1;
+					y_next <= y_reg +to_unsigned(1,11);
 				end if;
 			when right =>
 				dx_next <= '0';
