@@ -64,7 +64,7 @@ begin
 --I very much guessed the RGB values here, I was just looking for 4 distinct patterns
 	
 	else 
-	-- bottom third of the screen
+	-- AF_code
 			if ( ( (row <130) or (row >= 315)) or  --top and bottom
 				 ( (column> 320 ) and (column <= 345)) or	--middle section	
 				 ( (column>=455 or column<180) or  --left and right
@@ -73,10 +73,16 @@ begin
 				r <= ( others=>'0');
 				g <=(others => '0');
 				b <= (others => '0');	
-			else 
+			else
 				r <= ( others=>'0');
 				g <= ( others=>'0');
 				b <= (others => '1');
+				end if;
+	-- Paddle_code		
+			if( (column>10 and column< 20) and ( (row> paddle_y-45) and (row> paddle_y+45) ) ) then
+				r <= (others => '0');
+				g <= (others => '1');
+				b <= (others => '0');
 			end if;
 	end if;				
 	 			
