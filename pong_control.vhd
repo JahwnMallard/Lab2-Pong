@@ -41,21 +41,31 @@ entity pong_control is
 end pong_control;
 
 architecture Behavioral of pong_control is
+	COMPONENT button_debounce
+	PORT(
+		clk : IN std_logic;
+		reset : IN std_logic;
+		btn_in : IN std_logic;          
+		btn_out : OUT std_logic
+		);
+	END COMPONENT;
+signal paddle_y_reg, paddle_y_next, count, count_next : unsigned(10 downto 0);
+signal down_sig, up_sig : std_logic;
 
-type ball_dx is
-(left, right );
-
-type ball_dy is
-(ball_up, ball_down);
-
-signal count, count_next : unsigned (10 downto 0);
-signal ball_x_pos, ball_y_pos :  unsigned(10 downto 0);
-
-signal dx, dy : std_logic;
 begin
- --ball_X state register
 
-
+	up_button_debounce: button_debounce PORT MAP(
+		clk => clk ,
+		reset => reset,
+		btn_in => up,
+		btn_out => up_sig
+	);
+	down_button_debounce: button_debounce PORT MAP(
+		clk => clk ,
+		reset => reset,
+		btn_in => down,
+		btn_out => down_sig
+	);
 --count register
 process(clk,reset)
    begin
@@ -66,48 +76,37 @@ process(clk,reset)
       end if;
 end process;
 
+
+
 --count logic
-count_next <= (others => '0') when (count = 999) else
-				  count when (v_completed = '0') else
-				  count + 1;
-
-
-
-process(count_next)
- begin
- if(count_next= 0) then
-	if(dx = '1') then
-		ball_x_pos<= ball_x_pos+1;
-	elsif (dx ='0') then
-		ball_x_pos <= ball_x_pos - 1;
-	end if;
-
-end if;
-end process;	
-
-
-process(count_next)
+count_next <= (others => '0') when (count = 9999) else
+				  count + 1 when v_completed = '1' else
+				  count;
+				  
+process(clk, reset)
 begin
-if(count_next = 0) then
-	if( (ball_x_pos = 639) and (dx='1')) then
-		dx <= '0';
-	elsif ( (ball_x_pos = 0) and (dx='0')) then
-		dx <= '1';
-	else	
-		dx <= dx;
-	end if;
-end if;	
+		if (reset = '1') then
+			paddle_y_reg <= to_unsigned(45,11);
+		elsif rising_edge(clk) then
+			paddle_y_reg <= paddle_y_next;
+		end if;
+
 end process;
 
-process(reset, count_next)
-	begin
-		ball_x<= ("00110010010");
-	if(reset = '0') then
-		ball_x <= ball_x_pos;
-	end if;	
-	
-	ball_x<= ball_x_pos;
-	
-end process;	
+process(up, down, paddle_y_reg, paddle_y_next)
+begin 
+
+paddle_y_next <= paddle_y_reg;
+
+	if (up_sig = '1' and  down_sig = '0' and paddle_y_next > 44) then
+		paddle_y_next <= paddle_y_reg - 5;	
+	elsif (up_sig = '0' and down_sig = '1' and paddle_y_next <436 ) then
+		paddle_y_next <= paddle_y_reg + 5;
+	end if;
+
+end process;
+
+paddle_y <= paddle_y_reg;
+
 end Behavioral;
 
