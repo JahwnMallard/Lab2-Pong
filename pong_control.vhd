@@ -157,7 +157,7 @@ begin
 			when move =>
 				if (x_reg = 639) then
 					ball_next <= right;
-				elsif (x_reg = 5) then
+				elsif (x_reg = 10) then
 					ball_next <= left;
 				elsif (y_reg = 5) then 
 					ball_next <= top;
