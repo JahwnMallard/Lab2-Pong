@@ -49,9 +49,17 @@ architecture Behavioral of pong_control is
 		btn_out : OUT std_logic
 		);
 	END COMPONENT;
+	
+	
+type ball_movement is
+(move, right, left, top, bottom,  paddle_hit);
+
+signal ball_reg, ball_next : ball_movement;	
 signal paddle_y_reg, paddle_y_next, count, count_next: unsigned(10 downto 0);
 signal down_sig, up_sig : std_logic;
-
+signal velocity : unsigned(10 downto 0);
+signal x_reg,x_next, y_reg, y_next : unsigned(10 downto 0);
+signal stop_reg, stop_next, dx_reg, dx_next, dy_reg, dy_next : std_logic;
 begin
 
 	up_button_debounce: button_debounce PORT MAP(
@@ -66,6 +74,46 @@ begin
 		btn_in => down,
 		btn_out => down_sig
 	);
+--ball state register
+process(clk, reset)
+begin
+		if (reset = '1') then
+			ball_reg <= move;
+		elsif rising_edge(clk) then
+			ball_reg <= ball_next;
+		end if;
+
+end process;
+
+--ball position register
+process(clk, reset)
+begin
+		if (reset = '1') then
+			x_reg <= to_unsigned(400,11);
+			y_reg <= to_unsigned(200,11);
+		elsif rising_edge(clk) then
+			x_reg <= x_next;
+			y_reg <= y_next;
+		end if;
+
+end process;
+
+--ball direction register
+process(clk, reset)
+begin
+		if (reset = '1') then
+			dx_reg <= '1';
+			dy_reg <= '1';
+			stop_reg <= '0';
+		elsif rising_edge(clk) then
+			dx_reg <= dx_next;
+			dy_reg <= dy_next;
+			stop_reg <= stop_next;
+		end if;
+
+end process;
+
+
 --count register
 process(clk,reset)
    begin
@@ -79,11 +127,10 @@ end process;
 
 
 --count logic
---count_next <= (others => '0') when (count = 999999) else
-	--			  count + 1 when v_completed = '1' else
-		--		  count;
+count_next <= (others => '0') when (count >= velocity) else
+				  count + 1 when v_completed = '1' else
+				  count;
 				  
-count_next <= count;				  
 process(clk, reset)
 begin
 		if (reset = '1') then
@@ -94,6 +141,93 @@ begin
 
 end process;
 
+process(x_next, y_next, y_reg, x_reg, ball_reg, ball_next)
+begin
+
+	ball_next <= ball_reg;	
+	if(count_next = 0) then
+		case ball_reg is
+			when move =>
+				if (x_reg = 639) then
+					ball_next <= right;
+				elsif (x_reg = 0) then
+					ball_next <= left;
+				elsif (y_reg = 0) then 
+					ball_next <= top;
+				elsif (y_reg = 479) then
+					ball_next <= bottom;
+				end if;
+			when 	right =>
+				ball_next <= move;
+			when left => 
+				ball_next <= move;
+			when top =>
+				ball_next <= move;
+			when bottom =>
+				ball_next <= move;
+			when paddle_hit =>
+				ball_next <= move;
+		end case;
+	end if;
+end process;
+
+
+--movement logic
+process(ball_next, count_next)
+begin
+
+	x_next <= x_reg;
+	y_next <= y_reg;
+	dx_next <= dx_reg;
+	dy_next <= dy_reg;
+	stop_next <=stop_reg;
+	
+	
+	if(count_next = 0) then
+		case ball_next is
+			when move =>
+				if(dx_reg = '1') then
+					x_next <= x_reg + 1;
+				elsif (dx_reg = '0') then
+					x_next <= x_reg -1;
+				end if;
+				
+				if (dy_reg = '1') then
+					y_next <= y_reg -1;
+				elsif (dy_reg = '0') then
+					y_next <= y_reg +1;
+				end if;
+			when right =>
+				dx_next <= '0';
+			when left =>
+				dx_next <= '1';
+			when top =>
+				dy_next <= '0';
+			when bottom =>
+				dy_next <= '1';
+			when paddle_hit =>
+				dx_next <= dx_reg;
+			end case;
+		end if;
+end process;
+
+--output
+ball_x <= x_reg;
+ball_y <= y_reg;
+
+--Paddle Register
+process(clk, reset)
+begin
+		if (reset = '1') then
+			paddle_y_reg <= to_unsigned(200,11);
+		elsif rising_edge(clk) then
+			paddle_y_reg <= paddle_y_next;
+		end if;
+
+end process;
+
+
+--Paddle State Logic
 process(up_sig, down_sig, paddle_y_reg, paddle_y_next)
 begin 
 
@@ -108,6 +242,7 @@ paddle_y_next <= paddle_y_reg;
 
 end process;
 
+--Paddle output logic
 paddle_y <= paddle_y_reg;	
 
 
