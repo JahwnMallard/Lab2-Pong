@@ -157,9 +157,9 @@ begin
 			when move =>
 				if (x_reg = 639) then
 					ball_next <= right;
-				elsif (x_reg = 0) then
+				elsif (x_reg = 5) then
 					ball_next <= left;
-				elsif (y_reg = 0) then 
+				elsif (y_reg = 5) then 
 					ball_next <= top;
 				elsif (y_reg = 479) then
 					ball_next <= bottom;
@@ -233,11 +233,11 @@ begin
 			x_next <= x_reg -1;
 		end if;
 		
---		if(dy_reg = '1') then
-	--		y_next <= y_reg -1;
-	--	else 
-		--	y_next <= y_reg +1;
-	--	end if;
+		if(dy_reg = '1') then
+			y_next <= y_reg -1;
+		else 
+			y_next <= y_reg +1;
+		end if;
 end if;	
 end process;
 
