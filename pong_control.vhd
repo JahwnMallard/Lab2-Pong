@@ -35,6 +35,7 @@ entity pong_control is
            v_completed : in  STD_LOGIC;
            up : in  STD_LOGIC;
            down : in  STD_LOGIC;
+			  speed : in std_logic;
            ball_x : out  unsigned(10 downto 0);
            ball_y : out  unsigned(10 downto 0);
            paddle_y : out  unsigned(10 downto 0));
@@ -52,7 +53,7 @@ architecture Behavioral of pong_control is
 	
 	
 type ball_movement is
-(move, right, left, top, bottom,  paddle_hit);
+(move, right, left, top, bottom,  paddle_hit_hi, paddle_hit_lo);
 
 signal ball_reg, ball_next : ball_movement;	
 signal paddle_y_reg, paddle_y_next, count, count_next: unsigned(10 downto 0);
@@ -85,7 +86,9 @@ begin
 
 end process;
 
-velocity <= to_unsigned(500,11);
+velocity <= 	to_unsigned(5000,11) when speed = '1' else
+					to_unsigned(10000,11);
+
 --ball position register
 process(clk, reset)
 begin
@@ -128,9 +131,9 @@ end process;
 
 
 --count logic
-count_next <= (others => '0') when (count >= velocity) else
-				  count + 1 when v_completed = '1' else
-				  count;
+count_next <=	(others => '0') when count>= velocity else
+					count+1 when v_completed = '1' else
+					count;
 				  
 process(clk, reset)
 begin
@@ -142,10 +145,13 @@ begin
 
 end process;
 
-process(x_next, y_next, y_reg, x_reg, ball_reg, ball_next)
+
+--ball next-state logic
+process(ball_reg, ball_next, count_next, x_reg, y_reg, paddle_y_reg)
 begin
 
-	ball_next <= ball_reg;	
+	ball_next <= ball_reg;
+	
 	if(count_next = 0) then
 		case ball_reg is
 			when move =>
@@ -158,6 +164,14 @@ begin
 				elsif (y_reg = 479) then
 					ball_next <= bottom;
 				end if;
+				
+				if (x_reg >10 and x_reg < 20) then 
+					if ( (y_reg > paddle_y_reg - 45) and (y_reg< paddle_y_reg) ) then
+						ball_next <= paddle_hit_hi;
+					elsif( (y_reg < paddle_y_reg + 45) and (y_reg> paddle_y_reg) ) then
+						ball_next <= paddle_hit_lo;
+					end if;
+				end if;
 			when 	right =>
 				ball_next <= move;
 			when left => 
@@ -166,55 +180,83 @@ begin
 				ball_next <= move;
 			when bottom =>
 				ball_next <= move;
-			when paddle_hit =>
+			when paddle_hit_hi =>
+				ball_next <= move;
+			when paddle_hit_lo =>
 				ball_next <= move;
 		end case;
 	end if;
 end process;
 
 
---movement logic
-process(ball_next, count_next)
+--output logic
+process(ball_next, count_next, dx_reg, dy_reg, stop_reg)
 begin
 
-	x_next <= x_reg;
-	y_next <= y_reg;
 	dx_next <= dx_reg;
 	dy_next <= dy_reg;
 	stop_next <=stop_reg;
 	
-	
 	if(count_next = 0) then
 		case ball_next is
-			when move =>
-				if(dx_reg = '1') then
-					x_next <= x_reg + to_unsigned(1,11);
-				elsif (dx_reg = '0') then
-					x_next <= x_reg -to_unsigned(1,11);
-				end if;
-				
-				if (dy_reg = '1') then
-					y_next <= y_reg -to_unsigned(1,11);
-				elsif (dy_reg = '0') then
-					y_next <= y_reg +to_unsigned(1,11);
-				end if;
+			when move =>	
+			dx_next <= dx_reg;
+			dy_next<= dy_reg;
 			when right =>
 				dx_next <= '0';
 			when left =>
-				dx_next <= '1';
+				stop_next <= '1';
+				dx_next <= '1';			
 			when top =>
 				dy_next <= '0';
 			when bottom =>
 				dy_next <= '1';
-			when paddle_hit =>
-				dx_next <= dx_reg;
+			when paddle_hit_hi =>
+				dx_next <= '1';
+				dy_next <= '1';
+			when paddle_hit_lo =>
+				dx_next <= '1';
+				dy_next <= '0';				
 			end case;
 		end if;
 end process;
 
+process( count_next)
+begin
+	x_next<= x_reg;
+	y_next <= y_reg;
+
+ if(count_next = 0 and v_completed = '1') then
+		if(dx_reg = '1') then
+			x_next <= x_reg +1;
+		else 
+			x_next <= x_reg -1;
+		end if;
+		
+--		if(dy_reg = '1') then
+	--		y_next <= y_reg -1;
+	--	else 
+		--	y_next <= y_reg +1;
+	--	end if;
+end if;	
+end process;
+
 --output
-ball_x <= x_reg;
-ball_y <= y_reg;
+ball_x <= x_next;
+ball_y <= y_next;
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 --Paddle Register
 process(clk, reset)
@@ -232,7 +274,7 @@ end process;
 process(up_sig, down_sig, paddle_y_reg, paddle_y_next)
 begin 
 
-paddle_y_next <= paddle_y_reg;
+	paddle_y_next <= paddle_y_reg;
 
 	if (up_sig = '1' and  down_sig = '0' and paddle_y_reg > 80 ) then
 		paddle_y_next <= paddle_y_reg - to_unsigned(10, 11);	
@@ -246,7 +288,4 @@ end process;
 --Paddle output logic
 paddle_y <= paddle_y_reg;	
 
-
-
 end Behavioral;
-

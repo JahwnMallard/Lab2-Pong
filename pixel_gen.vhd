@@ -61,7 +61,7 @@ begin
 	g <= ( others=>'0');
 	b <= ( others=>'0');
 
---I very much guessed the RGB values here, I was just looking for 4 distinct patterns
+
 	
 	else 
 	-- AF_code
