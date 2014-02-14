@@ -70,23 +70,19 @@ begin
 				g <= (others => '1');
 				b <= (others => '0');
 			
-			elsif ( ( (row <130) or (row >= 315)) or  --top and bottom
+			elsif not( ( (row <130) or (row >= 315)) or  --top and bottom
 				 ( (column> 320 ) and (column <= 345)) or	--middle section	
 				 ( (column>=455 or column<180) or  --left and right
 				 ((column>210 and column<290) and ((row>240 and row<315) or (row>160 and row <210))) or -- A 
 				 ((column>375 and column<455) and ((row>240 and row<315 ) or (row>160 and row<210)))))  then
 				r <= ( others=>'0');
 				g <=(others => '0');
-				b <= (others => '0');
+				b <= (others => '1');
 			elsif (( ( column < ball_x + 5) and (column > ball_x -5) ) and ((row < ball_y +5) and (row > ball_y-5))) then
 				r <= ( others => '1');
 				g <= (others => '0');
 				b <= (others => '0');
-					
-			else
-				r <= ( others=>'0');
-				g <= ( others=>'0');
-				b <= (others => '1');
+
 				end if;
 	-- Paddle_code		
 
