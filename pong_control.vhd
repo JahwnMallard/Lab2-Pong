@@ -205,8 +205,7 @@ begin
 			when right =>
 				dx_next <= '0';
 			when left =>
-				stop_next <= '1';
-				dx_next <= '1';			
+				stop_next <= '1';			
 			when top =>
 				dy_next <= '0';
 			when bottom =>
