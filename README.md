@@ -140,7 +140,7 @@ The following modules were to implement the game
 
 The modules are connected as shown below:
 
-![block diagram](block_diagram.jpg)
+![block diagram](block_diagram.JPG)
 
 State transition diagram
 
