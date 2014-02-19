@@ -1,6 +1,6 @@
 ----------------------------------------------------------------------------------
--- Company: 
--- Engineer: 
+-- Company: USAFA
+-- Engineer: C2C John Miller
 -- 
 -- Create Date:    09:49:21 02/10/2014 
 -- Design Name: 
@@ -8,7 +8,8 @@
 -- Project Name: 
 -- Target Devices: 
 -- Tool versions: 
--- Description: 
+-- Description: Outputs a ball and paddle position based on the current state of the game, 
+-- as well as the inputs to the board
 --
 -- Dependencies: 
 --
@@ -86,6 +87,7 @@ begin
 
 end process;
 
+--Speed control logic
 velocity <= 	to_unsigned(5000,11) when speed = '1' else
 					to_unsigned(10000,11);
 
@@ -134,7 +136,8 @@ end process;
 count_next <=	(others => '0') when count>= velocity else
 					count+1 when v_completed = '1' else
 					count;
-				  
+					
+--paddle register
 process(clk, reset)
 begin
 		if (reset = '1') then
@@ -220,6 +223,7 @@ begin
 		end if;
 end process;
 
+--output buffer
 process( count_next)
 begin
 	x_next<= x_reg;
@@ -243,18 +247,6 @@ end process;
 --output
 ball_x <= x_next;
 ball_y <= y_next;
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 --Paddle Register

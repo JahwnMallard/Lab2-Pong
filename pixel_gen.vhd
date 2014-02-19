@@ -5,11 +5,13 @@
 -- Create Date:    15:32:14 02/03/2014 
 -- Design Name: 
 -- Module Name:    pixel_gen - Behavioral 
--- Project Name:   Atlys Video - Lab1
+-- Project Name:   Pong - Lab2
 -- Target Devices: 
 -- Tool versions: 
--- Description: Code to generate pixel pattern for the top shell
---	
+-- Description: Code to generate pixel pattern for the top shell, 
+-- generates the paddle and then ball based on the inputs, 
+--	then it generates the AF over that
+
 -- Dependencies: 
 --
 -- Revision: 

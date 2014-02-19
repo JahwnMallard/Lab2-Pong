@@ -1,14 +1,14 @@
 ----------------------------------------------------------------------------------
--- Company: 
--- Engineer: 
+-- Company: USAFA
+-- Engineer: C2C John Miller
 -- 
 -- Create Date:    02:52:07 02/14/2014 
--- Design Name: 
+-- Design Name: 		
 -- Module Name:    button_debounce - Behavioral 
--- Project Name: 
+-- Project Name:   Pong -Lab 2
 -- Target Devices: 
 -- Tool versions: 
--- Description: 
+-- Description: Takes in a button input and debounces it, producing a high output for only 1 clock cycle
 --
 -- Dependencies: 
 --
@@ -49,12 +49,12 @@ signal button_out_buff, button_next_buff : std_logic;
 
 begin
 
-
+--count logic
 count_next <= count_reg + 1 when button_next = pressed else
 to_unsigned(0, 20);
 
 
-
+--Count register
 process(clk, reset)
 	begin
 			if (reset = '1') then
@@ -75,7 +75,7 @@ process(clk, reset)
 		end if;
 	end process;
 	
-	
+--output buffer
 	process(clk)
 	begin
 		if (rising_edge(clk)) then
@@ -83,7 +83,7 @@ process(clk, reset)
 		end if;
 	end process;
 	
-	
+--next-state logic	
 	process(btn_in, count_reg, button_reg)
 		begin
 		
@@ -103,7 +103,7 @@ process(clk, reset)
 			end case;
 		end process;
 		
-		
+--ouptut logic		
 	process(button_reg)
 		begin
 			case button_reg is
@@ -116,5 +116,6 @@ process(clk, reset)
 			end case;
 	end process;
 	
+	--output
 	btn_out <= button_out_buff;
 end behavioral;
